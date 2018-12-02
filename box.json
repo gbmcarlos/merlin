@@ -1,0 +1,21 @@
+{
+    "chmod": "0755",
+    "compression": "GZ",
+    "directories": [
+        "src"
+    ],
+    "finder": [
+        {
+            "name": "*.php",
+            "exclude": [
+                "tests",
+                "test"
+            ],
+            "in": "vendor"
+        }
+    ],
+    "intercept": true,
+    "main": "src/bootstrap/app.php",
+    "output": "app.phar",
+    "stub": true
+}

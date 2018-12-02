@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export APP_NAME=${APP_NAME=localhost}
+export APP_NAME=${APP_NAME:=app}
 export OPTIMIZE_PHP=${OPTIMIZE_PHP:=true}
 export OPTIMIZE_COMPOSER=${OPTIMIZE_COMPOSER:=true}
 export XDEBUG_ENABLED=${XDEBUG_ENABLED:=false}

@@ -8,8 +8,11 @@
 
 require __DIR__ . '/../../vendor/autoload.php';
 
+use App\HelloCommand;
 use Symfony\Component\Console\Application;
 
-$application = new Application();
+$application = new Application(getenv('APP_NAME'), getenv('APP_RELEASE'));
+
+$application->add(new HelloCommand());
 
 $application->run();

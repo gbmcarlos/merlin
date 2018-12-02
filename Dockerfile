@@ -30,7 +30,18 @@ RUN     composer global require -v --no-suggest --no-interaction --no-ansi hirak
     &&  composer install -v --no-autoloader --no-suggest --no-dev --no-interaction --no-ansi \
     &&  rm -rf /root/.composer
 
-RUN ls -la /var/www/vendor
+## CONFIGURATION FILES
+### php, php-fpm, and nginx config files
+### Even though it would be better to have this layer (cheap) as far as possible down the stack of layers,
+### the next one checks for PHP settings, so let's copy the configuration files now
+COPY ./deploy/config/* /usr/local/etc/php/
+
+## BOX
+### Install Box as phar
+### https://github.com/box-project/box2
+RUN     curl -LSs https://box-project.github.io/box2/installer.php | php \
+    &&  chmod 775 box.phar
+COPY box.json box.json
 
 ## SOURCE CODE
 COPY ./src ./src
@@ -40,18 +51,19 @@ COPY ./src ./src
 ### By default, optimize the autoloader
 RUN composer dump-autoload -v --classmap-authoritative --no-dev --no-interaction --no-ansi
 
-## CONFIGURATION FILES
-### php, php-fpm, and nginx config files
-COPY ./deploy/config/* /usr/local/etc/
-
 ## SCRIPTS
 ### Make sure all scripts have execution permissions
 COPY ./deploy/scripts/* ./
 RUN chmod +x ./*.sh
 
 ## ENV VARS
-### A release is a version of your code that is deployed to an environment.
+ARG APP_PATH=/usr/local/bin/app
+ENV APP_PATH=$APP_PATH
 ARG APP_RELEASE=latest
-ENV APP_RELEASE $APP_RELEASE
+ENV APP_RELEASE=$APP_RELEASE
 
-CMD ["./entrypoint.sh"]
+## BUILD
+### Build the command line application binary with Box
+RUN ./build.sh
+
+CMD $APP_PATH help
